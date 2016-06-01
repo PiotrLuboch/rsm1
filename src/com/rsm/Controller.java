@@ -6,8 +6,8 @@ public class Controller {
 	{
 		String msg = "Ok!";
 		
-		if(numberOfPersons < numberOfTables*tableCapacity) 
-			msg= "There is not enough place.";
+		if(!(numberOfPersons == numberOfTables*tableCapacity)) 
+			msg= "Wrong input data";
 		
 		return msg;
 	}

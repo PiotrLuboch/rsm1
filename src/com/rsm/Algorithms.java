@@ -16,8 +16,8 @@ public class Algorithms {
 	}
 
 	public double compute() {
-		// optimizePeopleSittingPlaces();
-		sitPeopleRandomly();
+		 optimizePeopleSittingPlaces();
+		//sitPeopleRandomly();
 		return goalFunction();
 	}
 
