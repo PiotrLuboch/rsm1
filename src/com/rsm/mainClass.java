@@ -11,7 +11,13 @@ public class mainClass
 		CSVFileReader fr = new CSVFileReader(fileName);
 		ArrayList<ArrayList<Double>> tab = fr.readFile(",");
 		
-		Facade f = new Facade(tab,4,1);
+		Facade f = new Facade(tab,1,1);
+		GUI gui = new GUI();
+		gui.start();
+		
+		
+		
+		
 		Algorithms greedyAlgorithm = new Algorithms(f);
 		double d = greedyAlgorithm.compute();
 		for(Table t: f.tables)
