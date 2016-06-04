@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class SatisfactionMatrix
 {
-	private ArrayList<ArrayList<Double>> matrix;
+	public  ArrayList<ArrayList<Double>> matrix;
 	public SatisfactionMatrix(ArrayList<ArrayList<Double>> matrix)
 	{
 		this.matrix=matrix;

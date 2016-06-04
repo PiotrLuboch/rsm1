@@ -28,7 +28,7 @@ public class Table
 	{
 		if (hasFreeSits())
 		{
-			person.sit();
+			person.sit(tableId);
 			persons.add(person);
 
 			return true;

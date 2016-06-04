@@ -1,15 +1,16 @@
 package com.rsm;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
+
+import com.rsm.algorithms.OptimizationAlgorithm;
 
 public class Algorithms
 {
 	ArrayList<Person> persons;
 	ArrayList<Table> tables;
 	SatisfactionMatrix matrix;
-
+	OptimizationAlgorithm algorithm;
+	
 	public Algorithms(Facade facade)
 	{
 		this.persons = facade.persons;
@@ -17,17 +18,11 @@ public class Algorithms
 		this.matrix = facade.satisfactionMatrix;
 	}
 
-	public double performGreedy()
+	public double perform(OptimizationAlgorithm algorithm)
 	{
+		this.algorithm = algorithm;
 		unsitPersons();
-		sitPeopleUsingGreedyAlgorithm();
-		return goalFunction();
-	}
-
-	public double performRandom()
-	{
-		unsitPersons();
-		sitPeopleRandomly();
+		algorithm.perform();
 		return goalFunction();
 	}
 
@@ -35,57 +30,6 @@ public class Algorithms
 	{
 		persons.forEach(x -> x.isSitted = false);
 		tables.forEach(x-> x.persons.clear());
-	}
-
-	public void sitPeopleUsingGreedyAlgorithm()
-	{
-		Iterator<Table> it = tables.iterator();
-
-		while (it.hasNext())
-		{
-			Table t = it.next();
-			while (t.hasFreeSits())
-			{
-				if (t.isEmpty())
-				{
-					Pair<Person> p = matrix.findBestPairToSit(persons);
-					t.sitPerson(p.item1);
-					t.sitPerson(p.item2);
-				} else
-				{
-					Person p = matrix.findBestPersonToSit(persons);
-					t.sitPerson(p);
-				}
-			}
-		}
-	}
-
-	public void sitPeopleRandomly()
-	{
-		Iterator<Table> it = tables.iterator();
-
-		Random generator = new Random();
-		int personID;
-		int index;
-		ArrayList<Integer> tempPersons = new ArrayList<>();
-
-		for (int i = 0; i < persons.size(); ++i)
-		{
-			tempPersons.add(i);
-		}
-
-		while (it.hasNext())
-		{
-			Table t = it.next();
-			while (t.hasFreeSits())
-			{
-				index = generator.nextInt(tempPersons.size());
-				personID = tempPersons.get(index);
-				t.sitPerson(persons.get(personID));
-				tempPersons.remove(index);
-
-			}
-		}
 	}
 
 	public double goalFunction()
