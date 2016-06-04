@@ -7,9 +7,11 @@ public class Facade
 	public ArrayList<Table> tables = new ArrayList<>();
 	public ArrayList<Person> persons = new ArrayList<>();
 	public SatisfactionMatrix satisfactionMatrix;
+
 	int tableCapacity;
 	int numberOfTables;
 	int numberOfGuests;
+		
 
 	public Facade(ArrayList<ArrayList<Double>> tab, int tableCapacity,
 			int numberOfTables)
@@ -53,33 +55,46 @@ public class Facade
 		return d;
 	}
 	
-	public int getNumberOfTables()
+	public Facade(ArrayList<ArrayList<Double>> tab)
 	{
-		return numberOfTables;
+		this.numberOfGuests = tab.size();
+		
+		for (int index = 0; index < numberOfGuests; ++index)
+			persons.add(new Person(index));
+		
+		satisfactionMatrix = new SatisfactionMatrix(tab);
 	}
 
-	public void setNumberOfTables(int numberOfTables)
+	public void addTablesToFacade()
 	{
-		this.numberOfTables = numberOfTables;
+		for (int i = 0; i < numberOfTables; i++)
+			tables.add(new Table(i, tableCapacity));
 	}
-
-	public int getNumberOfGuests()
-	{
+	
+	public int getNumberOfGuests() {
 		return numberOfGuests;
 	}
 
-	public void setNumberOfGuests(int numberOfGuests)
-	{
+	public void setNumberOfGuests(int numberOfGuests) {
 		this.numberOfGuests = numberOfGuests;
 	}
+	
 
-	public int getTableCapacity()
-	{
+	public int getTableCapacity() {
 		return tableCapacity;
 	}
 
-	public void setTableCapacity(int tableCapacity)
-	{
+	public int getNumberOfTables() {
+		return numberOfTables;
+	}
+
+
+	public void setTableCapacity(int tableCapacity) {
 		this.tableCapacity = tableCapacity;
 	}
+
+	public void setNumberOfTables(int numberOfTables) {
+		this.numberOfTables = numberOfTables;
+	}
+
 }
