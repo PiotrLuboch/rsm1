@@ -185,7 +185,7 @@ public class GUI {
 		btnChooseSatisfactionMatrix.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser(
-						System.getProperty("user.home") + System.getProperty("file.separator") + "Desktop"); // default
+						"D:/" + System.getProperty("file.separator") + "programowanie" +System.getProperty("file.separator") + "java" +System.getProperty("file.separator") +"rsm"); // default
 																												// catalog
 				chooser.showSaveDialog(null);
 				try {
@@ -283,7 +283,7 @@ public class GUI {
 						
 						for(int i=0;i<numberOfPopulaiton;++i)
 						{
-							Facade ff = new Facade(f.satisfactionMatrix.matrix,4,4);
+							Facade ff = new Facade(f.satisfactionMatrix.matrix,tableCapacity,numberOfTables);
 							Algorithms alg = new Algorithms(ff);
 							alg.perform(new RandomAlgorithm(ff));
 							facades.add(ff);
