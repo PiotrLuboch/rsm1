@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,7 +21,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.rsm.algorithms.GeneticAlgorithm;
 import com.rsm.algorithms.GreedyAlgorithm;
+import com.rsm.algorithms.RandomAlgorithm;
+
+import javax.swing.border.TitledBorder;
+import java.awt.Color;
+import javax.swing.JProgressBar;
 
 public class GUI {
 
@@ -79,7 +86,7 @@ public class GUI {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 783, 382);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -107,12 +114,12 @@ public class GUI {
 		spinnerTableCapacity.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
 
 		JPanel panel_2 = new JPanel();
-		panel_2.setBounds(26, 133, 211, 105);
+		panel_2.setBounds(26, 133, 299, 114);
 		frame.getContentPane().add(panel_2);
 		panel_2.setLayout(null);
 
 		JButton btnSitPeople = new JButton("Sit people by algorithm:");
-		btnSitPeople.setBounds(0, 0, 211, 23);
+		btnSitPeople.setBounds(0, 0, 299, 23);
 		panel_2.add(btnSitPeople);
 
 		JRadioButton btnRandomAlgorithm = new JRadioButton("Random");
@@ -132,8 +139,12 @@ public class GUI {
 		group.add(btnGreedyAlgorithm);
 		group.add(btnGeneticAlgorithm);
 
+		JLabel lblNewLabel = new JLabel("");
+		lblNewLabel.setBounds(77, 107, 46, 14);
+		panel_2.add(lblNewLabel);
+
 		JPanel panel_1 = new JPanel();
-		panel_1.setBounds(247, 134, 177, 64);
+		panel_1.setBounds(424, 133, 177, 98);
 		frame.getContentPane().add(panel_1);
 		panel_1.setLayout(null);
 
@@ -161,6 +172,14 @@ public class GUI {
 		lblGoalFunctionValue.setBounds(0, 0, 152, 14);
 		panel_1.add(lblGoalFunctionValue);
 		lblGoalFunctionValue.setFont(new Font("Tahoma", Font.PLAIN, 16));
+
+		JLabel lblGeneticAlgorithm = new JLabel("Genetic Algorithm:");
+		lblGeneticAlgorithm.setBounds(0, 75, 95, 14);
+		panel_1.add(lblGeneticAlgorithm);
+
+		JLabel lbGeneticAlgorithmGoalValue = new JLabel("-");
+		lbGeneticAlgorithmGoalValue.setBounds(105, 75, 46, 14);
+		panel_1.add(lbGeneticAlgorithmGoalValue);
 
 		JButton btnChooseSatisfactionMatrix = new JButton("Choose satisfaction matrix file");
 		btnChooseSatisfactionMatrix.addActionListener(new ActionListener() {
@@ -193,6 +212,36 @@ public class GUI {
 		lblPersonsNumber.setBounds(263, 15, 88, 14);
 		frame.getContentPane().add(lblPersonsNumber);
 
+		JPanel panel_3 = new JPanel();
+		panel_3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Genetic Algorithm settings",
+				TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_3.setBounds(32, 258, 211, 64);
+		frame.getContentPane().add(panel_3);
+		panel_3.setLayout(null);
+
+		JLabel lbPopulationSize = new JLabel("Population size");
+		lbPopulationSize.setBounds(6, 19, 93, 14);
+		panel_3.add(lbPopulationSize);
+
+		JLabel lbGenerationsNumber = new JLabel("Generations Number");
+		lbGenerationsNumber.setBounds(6, 43, 110, 14);
+		panel_3.add(lbGenerationsNumber);
+
+		JSpinner spinnerPopulation = new JSpinner();
+		spinnerPopulation.setModel(new SpinnerNumberModel(new Integer(50), new Integer(1), null, new Integer(10)));
+		spinnerPopulation.setBounds(126, 16, 79, 17);
+		panel_3.add(spinnerPopulation);
+
+		JSpinner spinnerGenerationsNumber = new JSpinner();
+		spinnerGenerationsNumber
+				.setModel(new SpinnerNumberModel(new Integer(50), new Integer(1), null, new Integer(10)));
+		spinnerGenerationsNumber.setBounds(126, 40, 79, 17);
+		panel_3.add(spinnerGenerationsNumber);
+		
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setBounds(259, 284, 146, 14);
+		frame.getContentPane().add(progressBar);
+
 		btnSitPeople.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -200,19 +249,56 @@ public class GUI {
 				tableCapacity = (Integer) spinnerTableCapacity.getValue();
 
 				String msg = controller.checkAreTablesDataValid(numberOfPersons, numberOfTables, tableCapacity);
-				JOptionPane.showMessageDialog(btnSitPeople, msg);
+				if (!msg.equals("Ok!")) {
+					JOptionPane.showMessageDialog(btnSitPeople, msg);
+				}
 
-				if (msg.equals("Ok!")) {
+				else {
 					f.setNumberOfTables(numberOfTables);
 					f.setTableCapacity(tableCapacity);
 					f.addTablesToFacade();
 
-					if (btnGreedyAlgorithm.isSelected()) {
+					if (btnGreedyAlgorithm.isSelected()) {						
 						Algorithms algorithm = new Algorithms(f);
 						double d = algorithm.perform(new GreedyAlgorithm(f));
 						double dr = Math.round(d * 100.0) / 100.0;
 
 						lbGreedyGoalFunValue.setText(String.valueOf(dr));
+					}
+					if (btnRandomAlgorithm.isSelected()) {						
+						Algorithms algorithm = new Algorithms(f);
+						double d = algorithm.perform(new RandomAlgorithm(f));
+						double dr = Math.round(d * 100.0) / 100.0;
+
+						lbRandomGoalFunValue.setText(String.valueOf(dr));
+					}
+					if (btnGeneticAlgorithm.isSelected()) {						
+						Algorithms algorithm = new Algorithms(f);
+						GeneticAlgorithm ga = new GeneticAlgorithm();
+						ArrayList<Facade> facades = ga.getPopulation();
+						int numberOfPopulaiton = (Integer) spinnerPopulation.getValue();
+						int numberOfGenerations = (Integer) spinnerGenerationsNumber.getValue();
+						
+										
+						
+						for(int i=0;i<numberOfPopulaiton;++i)
+						{
+							Facade ff = new Facade(f.satisfactionMatrix.matrix,4,4);
+							Algorithms alg = new Algorithms(ff);
+							alg.perform(new RandomAlgorithm(ff));
+							facades.add(ff);
+						}
+						
+						for(int i=0;i<numberOfGenerations;++i){
+							algorithm.perform(ga);	
+							
+							
+							//progressBar.setValue((int)((((double)i)/numberOfGenerations)*100.0));
+							
+						}
+						double dr = Math.round(ga.getBestSet().goalFunction() * 100.0) / 100.0;
+
+						lbGeneticAlgorithmGoalValue.setText(String.valueOf(dr));
 					}
 				}
 

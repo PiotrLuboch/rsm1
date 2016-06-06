@@ -67,6 +67,7 @@ public class Facade
 
 	public void addTablesToFacade()
 	{
+		tables.clear();
 		for (int i = 0; i < numberOfTables; i++)
 			tables.add(new Table(i, tableCapacity));
 	}
