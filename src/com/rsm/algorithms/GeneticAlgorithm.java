@@ -12,7 +12,7 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 {
 	private static final double mutationRate = 0.015;
 	private static final double crossoverRate = 0.5;
-	private static final int eliteOffset = 3;
+	private static final int eliteOffset = 2;
 	private ArrayList<Facade> population = new ArrayList<>();
 
 	public GeneticAlgorithm()
@@ -34,10 +34,11 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 	private void evolvePopulation()
 	{
 		int populationSize = population.size();
+		population.sort(new FacadeComparator());
 		ArrayList<Facade> newPopulation = new ArrayList<>();
 		for (int i = 0; i < eliteOffset; ++i)
 			newPopulation.add(population.get(i));
-		
+
 		for (int i = eliteOffset; i < populationSize; ++i)
 		{
 			Facade f1 = facadeSelection();
@@ -140,14 +141,16 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 
 	private Facade facadeSelection()
 	{
+
 		Random rand = new Random();
-		population.sort(new FacadeComparator());
-		int index = (int) (Math.abs(rand.nextGaussian())
-				* (double) population.size());
+		int index = (int) (Math
+				.abs(rand.nextGaussian() * (double) population.size()));
+		// int index = (int)(Math.random()*population.size());
 		if (index > population.size() - 1)
 			index = population.size() - 1;
 
 		return population.get(index);
+
 	}
 
 	public ArrayList<Facade> getPopulation()
