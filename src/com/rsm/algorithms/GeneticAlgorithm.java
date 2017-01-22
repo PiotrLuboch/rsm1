@@ -12,6 +12,9 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 {
 	private double mutationRate = 0.015;
 	private double crossoverRate = 0.2;
+	//defaultowe wartoœci, jak nie ma adaptacyjnej zmiany odkomentowaæ
+	//private double mutationRate = 0.015;
+	//private double crossoverRate = 0.5;
 	private final int eliteOffset = 2;
 	private ArrayList<Facade> population = new ArrayList<>();
 
@@ -60,6 +63,7 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 		population.sort(new FacadeComparator());
 		ArrayList<Facade> newPopulation = new ArrayList<>();
 
+		//jak nie chcemy adaptacyjnej zmiany, zakomentowaæ
 		parametersAdaptation();
 
 		for (int i = 0; i < eliteOffset; ++i)
