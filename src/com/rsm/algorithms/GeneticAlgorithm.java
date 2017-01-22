@@ -10,10 +10,33 @@ import com.rsm.Table;
 
 public class GeneticAlgorithm extends OptimizationAlgorithm
 {
-	private static final double mutationRate = 0.015;
-	private static final double crossoverRate = 0.5;
-	private static final int eliteOffset = 2;
+	private double mutationRate = 0.015;
+	private double crossoverRate = 0.2;
+	private final int eliteOffset = 2;
 	private ArrayList<Facade> population = new ArrayList<>();
+
+	private enum DiversityLevel
+	{
+		LOW(0.1, 0.01), GOOD(0.35, 0.0001), HIGH(0.6, -0.1);
+		private double value;
+		private double delta;
+
+		private DiversityLevel(double value, double delta)
+		{
+			this.value = value;
+			this.delta = delta;
+		}
+
+		public double getValue()
+		{
+			return value;
+		}
+
+		public double getDelta()
+		{
+			return delta;
+		}
+	}
 
 	public GeneticAlgorithm()
 	{
@@ -36,6 +59,9 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 		int populationSize = population.size();
 		population.sort(new FacadeComparator());
 		ArrayList<Facade> newPopulation = new ArrayList<>();
+
+		parametersAdaptation();
+
 		for (int i = 0; i < eliteOffset; ++i)
 			newPopulation.add(population.get(i));
 
@@ -53,7 +79,7 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 		population = newPopulation;
 	}
 
-	private static Facade crossover(Facade parent1, Facade parent2)
+	private Facade crossover(Facade parent1, Facade parent2)
 	{
 		int numberOfGuests = parent1.persons.size();
 		int numberOfTables = parent1.tables.size();
@@ -61,10 +87,6 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 		Facade child = new Facade(parent1.satisfactionMatrix.matrix,
 				capacityOfTable, numberOfTables);
 		Random rand = new Random();
-
-		ArrayList<Integer> list = new ArrayList<>();
-		for (int i = 0; i < numberOfGuests; ++i)
-			list.add(i);
 
 		for (int i = 0; i < numberOfGuests; ++i)
 		{
@@ -100,7 +122,40 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 		return child;
 	}
 
-	private static void mutate(Facade obj)
+	private void parametersAdaptation()
+	{
+		long div = hammingDiversity();
+		long maxDiv = maxDiversity();
+		double val = ((double) div) / maxDiv;
+		double delta = 0.0;
+		if (val < DiversityLevel.LOW.getValue())
+		{
+			delta = DiversityLevel.LOW.getDelta();
+		} else if (val < DiversityLevel.GOOD.getValue())
+		{
+			double x = div - DiversityLevel.LOW.getValue();
+			double a = 1 / x;
+			double b1 = DiversityLevel.LOW.getDelta();
+			double b2 = DiversityLevel.GOOD.getDelta();
+			delta = (a * val - b1) * DiversityLevel.LOW.getDelta()
+					+ (-1 * a * val - b2) * DiversityLevel.GOOD.getDelta();
+		} else if (val < DiversityLevel.HIGH.getValue())
+		{
+			double x = div - DiversityLevel.GOOD.getValue();
+			double a = 1 / x;
+			double b1 = DiversityLevel.GOOD.getDelta();
+			double b2 = DiversityLevel.HIGH.getDelta();
+			delta = (a * val - b1) * DiversityLevel.GOOD.getDelta()
+					+ (-1 * a * val - b2) * DiversityLevel.HIGH.getDelta();
+		} else
+		{
+			delta = DiversityLevel.HIGH.getDelta();
+		}
+		crossoverRate -= delta;
+		mutationRate += delta;
+	}
+
+	private void mutate(Facade obj)
 	{
 		ArrayList<Person> p = obj.persons;
 		ArrayList<Table> t = obj.tables;
@@ -151,6 +206,35 @@ public class GeneticAlgorithm extends OptimizationAlgorithm
 
 		return population.get(index);
 
+	}
+
+	private long hammingDiversity()
+	{
+		long diversity = 0;
+		for (int n = 0; n < population.size() - 1; ++n)
+		{
+			for (int k = n + 1; k < population.size(); ++k)
+			{
+				for (int i = 0; i < population.get(0).getNumberOfGuests(); ++i)
+				{
+					Person p1 = population.get(n).persons.get(i);
+					Person p2 = population.get(k).persons.get(i);
+					if (p1.tableId != p2.tableId)
+						++diversity;
+				}
+			}
+		}
+		return diversity;
+	}
+
+	private long maxDiversity()
+	{
+		long div = 0;
+
+		div = population.size() * (population.size() - 1)
+				* population.get(0).persons.size();
+
+		return div;
 	}
 
 	public ArrayList<Facade> getPopulation()
